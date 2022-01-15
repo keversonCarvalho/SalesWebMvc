@@ -14,7 +14,7 @@ namespace SalesWebMvc
     {
         public static void Main(string[] args)
         {
-            //Entry points
+            
             CreateWebHostBuilder(args).Build().Run();
         }
 
