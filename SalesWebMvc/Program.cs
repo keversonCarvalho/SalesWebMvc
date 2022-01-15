@@ -12,6 +12,7 @@ namespace SalesWebMvc
 {
     public class Program
     {
+        //Entry point
         public static void Main(string[] args)
         {
             
