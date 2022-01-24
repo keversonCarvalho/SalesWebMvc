@@ -25,7 +25,7 @@ namespace SalesWebMvc.Services
         public async Task InsertAsync(Seller obj)
         {
             _context.Add(obj);
-             await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Seller> FindByIdAsync(int id)
@@ -35,29 +35,37 @@ namespace SalesWebMvc.Services
 
         public async Task RemoveAsync(int id)
         {
-            var obj = await _context.Seller.FindAsync(id);
-            _context.Seller.Remove(obj);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Seller obj)
-        {
-            bool hasAny = await _context.Seller.AnyAsync(seller => seller.Id == obj.Id);
-            if (!hasAny)
-            {
-                throw new NotFoundException("Id not found");
-            }
-
             try
             {
-                _context.Update(obj);
+                var obj = await _context.Seller.FindAsync(id);
+                _context.Seller.Remove(obj);
                 await _context.SaveChangesAsync();
+
             }
 
-            catch(DbUpdateConcurrencyException e)
+            catch(DbUpdateException)
             {
-                throw new DbConcurrencyException(e.Message);
+                throw new IntegrityException("Can't delete the seller becouse she/he has saler records");
+            }
+        }
+            public async Task UpdateAsync(Seller obj)
+            {
+                bool hasAny = await _context.Seller.AnyAsync(seller => seller.Id == obj.Id);
+                if (!hasAny)
+                {
+                    throw new NotFoundException("Id not found");
+                }
+
+                try
+                {
+                    _context.Update(obj);
+                    await _context.SaveChangesAsync();
+                }
+
+                catch (DbUpdateConcurrencyException e)
+                {
+                    throw new DbConcurrencyException(e.Message);
+                }
             }
         }
     }
-}
