@@ -35,11 +35,19 @@ namespace SalesWebMvc.Services
 
         public void Remove(int id)
         {
-            var obj = _context.Seller.Find(id);
-            _context.Seller.Remove(obj);
-            _context.SaveChanges();
-        }
+            try
+            {
+                var obj = _context.Seller.Find(id);
+                _context.Seller.Remove(obj);
+                _context.SaveChanges();
 
+            }
+
+            catch (DbUpdateException)
+            {
+                throw new IntegrityException("Can't delete seller becouse he/she has sales");
+            }
+        }
         public void Update(Seller obj)
         {
             if (!_context.Seller.Any(seller => seller.Id == obj.Id))
@@ -53,7 +61,7 @@ namespace SalesWebMvc.Services
                 _context.SaveChanges();
             }
 
-            catch(DbUpdateConcurrencyException e)
+            catch (DbUpdateConcurrencyException e)
             {
                 throw new DbConcurrencyException(e.Message);
             }
